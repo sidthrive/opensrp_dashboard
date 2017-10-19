@@ -2056,8 +2056,8 @@ if (typeof NProgress != 'undefined') {
 				            }
 				        });
 				        chart.showLoading('Loading data ...');
-				        console.log(window.location.origin+"/opensrp_dashboard/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1]);
-					    var req = $.getJSON(window.location.origin+"/opensrp_dashboard/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1], function (json) {
+				        console.log(window.location.origin+"/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1]);
+					    var req = $.getJSON(window.location.origin+"/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1], function (json) {
 					    	chart.xAxis[0].setCategories(json.labels);
 					        chart.addSeries({
 					            name: 'Jumlah',
@@ -2281,7 +2281,7 @@ if (typeof NProgress != 'undefined') {
 			  var ctx = document.getElementById("thisWeekForms");
 			  var loading = $("#loading");
 			  
-			  $.getJSON(window.location.origin+"/opensrp_dashboard/data/getthisweekforms", function (json) {
+			  $.getJSON(window.location.origin+"/data/getthisweekforms", function (json) {
 				  	var thisWeekForms = new Chart(ctx, {
 					type: 'bar',
 					data: {
