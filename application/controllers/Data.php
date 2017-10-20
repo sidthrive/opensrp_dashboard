@@ -36,4 +36,22 @@ class Data extends CI_Controller {
       }
       echo json_encode(["labels"=>$labels,"data"=>$data]);
     }
+
+    public function getdatabytanggal($dusun,$start,$end){
+      $dusun = str_replace("_", " ", $dusun);
+      $formdata = $this->DataModel->getdatabytanggal($dusun,$start,$end);
+      $labels = [];
+      $data = [];
+      foreach ($formdata as $label => $value) {
+        array_push($labels, $label);
+        array_push($data, $value);
+      }
+      echo json_encode(["labels"=>$labels,"data"=>$data]);
+    }
+
+    public function getdrilldata($dusun,$date){
+      $dusun = str_replace("_", " ", $dusun);
+      $formdata = $this->DataModel->getCountPerFormForDrill($dusun,$date);
+      echo json_encode($formdata);
+    }
 }

@@ -36,14 +36,21 @@
                   <li><a><i class="fa fa-edit"></i> Data Entry <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="<?=base_url()?>dataentry/bidanbyform">Data Entry By Form</a></li>
-                      <li><a href="form_advanced.html">Data Entry By Tanggal</a></li>
-                      <li><a href="form_validation.html">On Time Submission</a></li>
+                      <li><a href="<?=base_url()?>dataentry/bidanbytanggal">Data Entry By Tanggal</a></li>
+                      <li><a>On Time Submission<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                          <li class="sub_menu"><a href="<?=base_url()?>dataentry/bidanontimesubmission/daily">Daily On Time</a>
+                          </li>
+                          <li class="sub_menu"><a href="<?=base_url()?>dataentry/bidanontimesubmission/weekly">Weekly On Time</a>
+                          </li>
+                        </ul>
+                      </li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-desktop"></i> Laporan <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="general_elements.html">Grafik Cakupan</a></li>
-                      <li><a href="media_gallery.html">Download PWS</a></li>
+                      <li><a href="<?=base_url()?>laporan/cakupanindikatorpws">Grafik Cakupan</a></li>
+                      <li><a href="<?=base_url()?>laporan/downloadbidanpws">Download PWS</a></li>
                     </ul>
                   </li>
                   <li><a><i class="fa fa-table"></i> HHHScore <span class="fa fa-chevron-down"></span></a>
