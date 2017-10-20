@@ -10,6 +10,7 @@ class Data extends CI_Controller {
             redirect('login');
         }
         $this->load->model('DataModel');
+        session_write_close();
     }
 
    	public function getThisWeekForms($value='')
