@@ -54,6 +54,7 @@ var request = [];
 function stopRequest(){
 	request.forEach(function(req,idx){
 		console.log(req);
+		console.log(idx);
 		req.abort();
 		request.splice(idx, 1);
 	});
@@ -2056,8 +2057,8 @@ if (typeof NProgress != 'undefined') {
 				            }
 				        });
 				        chart.showLoading('Loading data ...');
-				        console.log(window.location.origin+"/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1]);
-					    var req = $.getJSON(window.location.origin+"/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1], function (json) {
+				        console.log(window.location.origin+"/opensrp_dashboard/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1]);
+					    var req = $.getJSON(window.location.origin+"/opensrp_dashboard/data/getdatabyform/"+id+"/"+args[0]+"/"+args[1], function (json) {
 					    	chart.xAxis[0].setCategories(json.labels);
 					        chart.addSeries({
 					            name: 'Jumlah',
@@ -2066,7 +2067,6 @@ if (typeof NProgress != 'undefined') {
 					        },true);
 					        chart.hideLoading();
 					    });
-					    request.push(req);
 					});
 				}
 
@@ -2281,7 +2281,7 @@ if (typeof NProgress != 'undefined') {
 			  var ctx = document.getElementById("thisWeekForms");
 			  var loading = $("#loading");
 			  
-			  $.getJSON(window.location.origin+"/data/getthisweekforms", function (json) {
+			  $.getJSON(window.location.origin+"/opensrp_dashboard/data/getthisweekforms", function (json) {
 				  	var thisWeekForms = new Chart(ctx, {
 					type: 'bar',
 					data: {
@@ -5104,9 +5104,31 @@ if (typeof NProgress != 'undefined') {
 	   
 		}  
 	   
+
+	$(window).bind("beforeunload", function (event) {
+        $.each(request, function (idx, jqxhr) {
+            if (jqxhr)
+                jqxhr.abort();
+        });
+    });
+
+    function registerJqxhr(event, jqxhr, settings) {
+    	console.log("jqxhr event registered");
+        request.push(jqxhr);
+    }
+
+    function unregisterJqxhr(event, jqxhr, settings) {
+        var idx = $.inArray(jqxhr, request);
+        request.splice(idx, 1);
+    	console.log("jqxhr event un-registered");
+    }
+
 	   
+    $(document).ajaxSend(registerJqxhr);
+    $(document).ajaxComplete(unregisterJqxhr);
 	$(document).ready(function() {
-				
+		
+
 		init_sparklines();
 		init_flot_chart();
 		init_sidebar();
@@ -5141,7 +5163,7 @@ if (typeof NProgress != 'undefined') {
 		init_CustomNotification();
 		init_autosize();
 		init_autocomplete();
-				
+
 	});	
 	
 
