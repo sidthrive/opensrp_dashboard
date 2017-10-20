@@ -1768,23 +1768,46 @@ if (typeof NProgress != 'undefined') {
 		}
 		
 		 
-		function init_daterangepicker_reservation() {
+		function init_daterangepicker_by_form() {
 	      
 			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
-			console.log('init_daterangepicker_reservation');
+			console.log('init_daterangepicker_by_form');
 		 
-			$('#by_form_datepicker').daterangepicker({
-			    locale: {
-			      format: 'YYYY-MM-DD'
-			    },
-			    startDate: '2016-01-01',
-			    endDate: moment()
-			}, function(start, end, label) {
-				stopRequest();
-				init_charts([start.format("YYYY-MM-DD"),end.format("YYYY-MM-DD")]);
-			  console.log(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
-			});
-			init_charts([moment('2016-01-01').format("YYYY-MM-DD"),moment().format("YYYY-MM-DD")]);
+			if ($('#by_form_datepicker').length ){
+				$('#by_form_datepicker').daterangepicker({
+				    locale: {
+				      format: 'YYYY-MM-DD'
+				    },
+				    startDate: '2016-01-01',
+				    endDate: moment()
+				}, function(start, end, label) {
+					stopRequest();
+					init_charts([start.format("YYYY-MM-DD"),end.format("YYYY-MM-DD")]);
+				  console.log(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
+				});
+				init_charts([moment('2016-01-01').format("YYYY-MM-DD"),moment().format("YYYY-MM-DD")]);
+			}
+		}
+
+		function init_daterangepicker_by_tanggal() {
+	      
+			if( typeof ($.fn.daterangepicker) === 'undefined'){ return; }
+			console.log('init_daterangepicker_by_tanggal');
+		 
+			if ($('#by_tanggal_datepicker').length ){
+					$('#by_tanggal_datepicker').daterangepicker({
+				    locale: {
+				      format: 'YYYY-MM-DD'
+				    },
+				    startDate: moment().subtract(29, 'days'),
+				    endDate: moment()
+				}, function(start, end, label) {
+					stopRequest();
+					init_charts([start.format("YYYY-MM-DD"),end.format("YYYY-MM-DD")]);
+				  console.log(start.format("YYYY-MM-DD"), end.format("YYYY-MM-DD"));
+				});
+				init_charts([moment().subtract(29, 'days').format("YYYY-MM-DD"),moment().format("YYYY-MM-DD")]);
+			}
 		}
 	   
 	   /* SMART WIZARD */
@@ -2068,9 +2091,121 @@ if (typeof NProgress != 'undefined') {
 					        chart.hideLoading();
 					    });
 					});
-				}
+				}	
+			}
 
+			if ($('.by_tanggal').length ){
 				
+				console.log("BY FORM DETECTED: "+$('.by_tanggal').length);
+				if(args!=null){
+					var by_tanggal = $('.by_tanggal');
+					Highcharts.setOptions({
+				        lang: {
+				            decimalPoint: ',',
+				            thousandsSep: '.'
+				        }
+				    });
+					$.each(by_tanggal,function(){
+						var id = $(this).attr('id');
+						var chart = new Highcharts.chart(id,{			
+				            chart: {
+				                height: 400,
+					            type: 'column'
+				            },
+				            title: {
+				                text: ''
+				            }
+				        });
+				        chart.showLoading('Loading data ...');
+				        console.log(window.location.origin+"/data/getdatabytanggal/"+id+"/"+args[0]+"/"+args[1]);
+					    var req = $.getJSON(window.location.origin+"/data/getdatabytanggal/"+id+"/"+args[0]+"/"+args[1], function (json) {
+					    	var y = [];
+					    	$.each(json.data,function(index,value){
+					            y.push({"name":json.labels[index],"y":value,"drilldown":json.labels[index]});
+					        });
+					    	$('#'+id).highcharts({			
+					            chart: {
+					                height: 400,
+						            type: 'column',
+						            events: {
+					                    drilldown: function (e) {
+					                        if (!e.seriesOptions) {
+					                            
+					                            var drill_chart = this,
+					                                drilldowns = [],
+					                                series = [];
+					                            console.log(window.location.origin+"/data/getdrilldata/"+id+"/"+e.point.name);
+					                            $.getJSON(window.location.origin+"/data/getdrilldata/"+id+"/"+e.point.name,function(drilldowns){
+					                                series = drilldowns[e.point.name];
+					                                console.log(series);
+					                                drill_chart.hideLoading();
+					                                drill_chart.addSeriesAsDrilldown(e.point, series);
+					                            }).fail(function(jqxhr, textStatus, error ) {
+					                               var err = textStatus + ", " + error;
+					                                console.log( "Request Failed: " + err );
+					                                console.log( "User failed: " + user + ", "+e.point.name );
+					                            });
+					                            // Show the loading label
+					                            drill_chart.showLoading('Mengambil data ...');
+					                        }
+
+					                    }
+					                }
+					            },
+					            title: {
+					                text: ''
+					            },
+					            xAxis: {
+					                    type: 'category'
+					                },
+					            yAxis: [{min:0,startOnTick: false},{min:0,startOnTick: false,opposite: true},{ // Primary yAxis
+					                labels: {
+					                    format: '{value}'
+					                    },
+					                title: {
+					                        text: 'Jumlah Form'
+					                    }
+					                }],
+					            tooltip: {
+					                shared: true
+					            },
+					            legend: {
+					                enabled : false
+					            },
+					            plotOptions: {
+					                series: {
+					                    borderWidth: 0,
+					                    pointWidth: 25,
+					                    dataLabels: {
+					                        enabled: true,
+					                        format: '{point.y}'
+					                    }
+					                }
+					            },
+					            series: [{
+					                    name: 'Jumlah Entry',
+					                    type: 'column',
+					                    data: y,
+					                    color: '#73c1f7',
+					                    tooltip: {
+					                        valueSuffix: ''
+					                    }
+					                }],
+					            drilldown: {
+					                series: [],
+					                drillUpButton: {
+					                    relativeTo: 'spacingBox',
+					                    position: {
+					                        y: 0,
+					                        x: 0
+					                    }
+					                }
+					            }
+					        });
+					        chart.hideLoading();
+					    });
+					});
+				}	
 			}	
 
 
@@ -5113,14 +5248,12 @@ if (typeof NProgress != 'undefined') {
     });
 
     function registerJqxhr(event, jqxhr, settings) {
-    	console.log("jqxhr event registered");
         request.push(jqxhr);
     }
 
     function unregisterJqxhr(event, jqxhr, settings) {
         var idx = $.inArray(jqxhr, request);
         request.splice(idx, 1);
-    	console.log("jqxhr event un-registered");
     }
 
 	   
@@ -5144,7 +5277,8 @@ if (typeof NProgress != 'undefined') {
 		init_daterangepicker();
 		init_daterangepicker_right();
 		init_daterangepicker_single_call();
-		init_daterangepicker_reservation();
+		init_daterangepicker_by_form();
+		init_daterangepicker_by_tanggal();
 		init_SmartWizard();
 		init_EasyPieChart();
 		init_charts();
